@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>For my baby Angelica</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
+body{background:linear-gradient(#ffe6ea,#ffd6e0);color:#c71585;text-align:center;padding:20px;overflow-x:hidden;}
+
+.screen{display:none;}
+.active{display:block;}
+
+.btn{background:#ff1493;color:white;border:none;padding:14px 28px;font-size:16px;border-radius:30px;cursor:pointer;margin:15px 0;box-shadow:0 5px 15px rgba(0,0,0,.2);transition:.3s;}
+.btn:hover{transform:scale(1.05);background:#ff69b4;}
+
+.photo-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;max-width:330px;margin:20px auto;}
+.photo-grid img{width:100%;height:150px;object-fit:cover;border-radius:15px;border:3px solid #ff1493;}
+
+.letter-boxes{display:flex;gap:8px;justify-content:center;margin:25px 0;}
+.box{width:36px;height:48px;border:2px solid #ff1493;border-radius:8px;background:white;font-size:22px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 10px #ff69b4;animation:sparkle 1.5s infinite alternate;}
+@keyframes sparkle{from{box-shadow:0 0 5px #ff69b4}to{box-shadow:0 0 15px #ff1493}}
+
+.keyboard{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;max-width:320px;margin:0 auto 20px;}
+.key{padding:10px;border:none;border-radius:8px;background:#ffc0cb;color:#c71585;font-size:18px;cursor:pointer;}
+.key.used{visibility:hidden;}
+
+.final-screen img{width:260px;border-radius:15px;margin:20px 0;border:3px solid #ff1493;}
+
+.confetti{position:fixed;width:8px;height:8px;animation:fall 3s linear forwards;}
+@keyframes fall{to{transform:translateY(100vh) rotate(360deg);opacity:0}}
+</style>
+</head>
+<body>
+
+<div id="start" class="screen active">
+<h1>4 PICS 1 WORD 💖</h1>
+<p>Special game for my baby <b>Angelica</b> 💕</p>
+<button class="btn" onclick="startGame()">PLAY</button>
+</div>
+
+<!-- PUZZLE 1 -->
+<div id="puzzle1" class="screen">
+<h2>PUZZLE 1</h2>
+<div class="photo-grid">
+<img src="baby1.jpg">
+<img src="baby2.jpg">
+<img src="baby3.jpg">
+<img src="baby4.jpg">
+</div>
+<div class="letter-boxes" id="boxes1"></div>
+<div class="keyboard" id="keys1"></div>
+<button class="btn" onclick="removeLetter(1)">⌫ REMOVE</button>
+<button class="btn" onclick="checkPuzzle(1)">CHECK</button>
+</div>
+
+<!-- PUZZLE 2 -->
+<div id="puzzle2" class="screen">
+<h2>PUZZLE 2</h2>
+<div class="photo-grid">
+<img src="mylove.jpg">
+<img src="us.jpg">
+<img src="long.jpg">
+<img src="term.jpg">
+</div>
+<div class="letter-boxes" id="boxes2"></div>
+<div class="keyboard" id="keys2"></div>
+<button class="btn" onclick="removeLetter(2)">⌫ REMOVE</button>
+<button class="btn" onclick="checkPuzzle(2)">CHECK</button>
+</div>
+
+<!-- PUZZLE 3 -->
+<div id="puzzle3" class="screen">
+<h2>PUZZLE 3</h2>
+<div class="photo-grid">
+<img src="will.jpg">
+<img src="you.jpg">
+<img src="bee.jpg">
+<img src="my.jpg">
+</div>
+<div class="letter-boxes" id="boxes3"></div>
+<div class="keyboard" id="keys3"></div>
+<button class="btn" onclick="removeLetter(3)">⌫ REMOVE</button>
+<button class="btn" onclick="checkPuzzle(3)">CHECK</button>
+</div>
+
+<!-- FINAL -->
+<div id="final" class="screen final-screen">
+<h2>my baby gelika 💖</h2>
+<p>
+From the moment I met you, everything felt different.  
+You make my days brighter and my heart happier.  
+Will you be my Valentine? 💘
+</p>
+<br>
+<button class="btn" onclick="yes()">YES 💖</button>
+<button class="btn" onclick="no()">NO 😢</button>
+</div>
+
+<script>
+const answers=["GORGEOUS","LONGTERM","VALENTINE"];
+let current=[0,0,0];
+
+function showScreen(id){
+  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+}
+
+function startGame(){showScreen("puzzle1");}
+
+function setupPuzzle(n){
+  const boxes=document.getElementById("boxes"+n);
+  boxes.innerHTML="";
+  for(let i=0;i<answers[n-1].length;i++) boxes.innerHTML+=`<div class="box"></div>`;
+
+  const letters=answers[n-1].split("").concat(["X","Z","Y","A","B","O"]);
+  letters.sort(()=>Math.random()-0.5);
+  const keys=document.getElementById("keys"+n);
+  keys.innerHTML="";
+  letters.forEach(l=>{
+    let b=document.createElement("button");
+    b.textContent=l;
+    b.className="key";
+    b.onclick=()=>pickKey(n,b,l);
+    keys.appendChild(b);
+  });
+}
+
+function pickKey(n,btn,l){
+  if(btn.classList.contains("used")) return;
+  if(current[n-1]>=answers[n-1].length) return;
+
+  const boxes=document.querySelectorAll(`#boxes${n} .box`);
+  boxes[current[n-1]].textContent=l;
+  btn.classList.add("used");
+  current[n-1]++;
+}
+
+function removeLetter(n){
+  if(current[n-1]===0) return;
+  const boxes=document.querySelectorAll(`#boxes${n} .box`);
+  current[n-1]--;
+  const letter=boxes[current[n-1]].textContent;
+  boxes[current[n-1]].textContent="";
+
+  document.querySelectorAll(`#keys${n} .key`).forEach(k=>{
+    if(k.textContent===letter && k.classList.contains("used")){
+      k.classList.remove("used");
+      return;
+    }
+  });
+}
+
+function checkPuzzle(n){
+  const boxes=document.querySelectorAll(`#boxes${n} .box`);
+  let ans="";
+  boxes.forEach(b=>ans+=b.textContent);
+  if(ans===answers[n-1]){
+    confetti();
+    if(n===1) showScreen("puzzle2");
+    if(n===2) showScreen("puzzle3");
+    if(n===3) showScreen("final");
+  } else {
+    alert("aray koh 😅 try again!");
+    current[n-1]=0;
+    boxes.forEach(b=>b.textContent="");
+    document.querySelectorAll(`#keys${n} .key`).forEach(k=>k.classList.remove("used"));
+  }
+}
+
+function confetti(){
+  for(let i=0;i<120;i++){
+    let c=document.createElement("div");
+    c.className="confetti";
+    c.style.left=Math.random()*100+"vw";
+    c.style.background=["#ff69b4","#ffc0cb","#ff1493","#ffd1dc"][Math.floor(Math.random()*4)];
+    document.body.appendChild(c);
+    setTimeout(()=>c.remove(),3000);
+  }
+}
+
+function yes(){
+  document.body.innerHTML = `
+  <div style="
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+    background:linear-gradient(#ffe6ea,#ffd6e0);
+    color:#c71585;
+    text-align:center;
+    padding:20px;
+    font-family:Poppins,sans-serif;
+  ">
+    <h1>💖 THANK YOU, ANGELICA 💖</h1>
+    <p style="font-size:18px;max-width:500px;margin-top:15px;">
+      I’m so happy you said YES 😭💘<br><br>
+      From now on, I promise to make you smile,
+      take care of you, and love you more each day.  
+      <br><br>
+      Thanks for being my Valentine 💕  
+    </p>
+    <h2 style="margin-top:20px;">Love, yours truly 💌</h2>
+  </div>
+  `;
+}
+
+function no(){alert("aray koh 💔 try again nyahaha");}
+
+setupPuzzle(1);
+setupPuzzle(2);
+setupPuzzle(3);
+</script>
+</body>
+</html>
